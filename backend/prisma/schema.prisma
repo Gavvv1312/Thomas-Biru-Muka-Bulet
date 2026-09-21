@@ -1,0 +1,184 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  owner
+  teknisi
+  recycler
+  admin
+}
+
+enum ComponentCondition {
+  baik
+  rusak_ringan
+  rusak_berat
+  mati
+}
+
+enum ValuationChannel {
+  buyback
+  recycle
+}
+
+enum TransactionChannel {
+  buyback
+  recycle
+}
+
+enum TransactionStatus {
+  diajukan
+  ditawar
+  diverifikasi
+  selesai
+  dibatalkan
+}
+
+enum PaymentStatus {
+  unpaid
+  pending
+  paid
+}
+
+enum DropOffType {
+  repair_shop
+  recycling_center
+}
+
+model User {
+  id            String   @id @default(cuid())
+  nama          String
+  email         String   @unique
+  passwordHash  String
+  role          UserRole @default(owner)
+  poinHijau     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  devices           Device[]
+  transactionsAsOwner Transaction[] @relation("UserTransactions")
+  transactionsAsPartner Transaction[] @relation("PartnerTransactions")
+  refreshTokens     RefreshToken[]
+  dropOffPoints     DropOffPoint[]
+  pointsTransactions PointsTransaction[]
+
+  @@map("users")
+}
+
+model Device {
+  id                    String   @id @default(cuid())
+  userId                String
+  kategori              String
+  merek                 String
+  tipe                  String
+  tahunRilis            Int
+  estimatedWeightGrams  Int
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  components    DeviceComponent[]
+  valuation     Valuation?
+  transactions  Transaction[]
+
+  @@map("devices")
+}
+
+model DeviceComponent {
+  id              String             @id @default(cuid())
+  deviceId        String
+  namaKomponen    String
+  kondisi         ComponentCondition
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  device Device @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@map("device_components")
+}
+
+model Valuation {
+  id                  String           @id @default(cuid())
+  deviceId            String           @unique
+  estimasiNilaiMin    Float
+  estimasiNilaiMax    Float
+  jalurRekomendasi    ValuationChannel
+  breakdown           Json
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  device Device @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@map("valuations")
+}
+
+model Transaction {
+  id                    String            @id @default(cuid())
+  deviceId              String
+  userId                String
+  partnerId             String
+  jalur                 TransactionChannel
+  status                TransactionStatus @default(diajukan)
+  hargaTawar            Float?
+  hargaFinal            Float?
+  paymentStatus         PaymentStatus     @default(unpaid)
+  verifiedWeightGrams   Int?
+  verificationNotes     String?
+  certificateData       Json?
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  completedAt           DateTime?
+
+  device   Device @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  user     User   @relation("UserTransactions", fields: [userId], references: [id], onDelete: Cascade)
+  partner  User   @relation("PartnerTransactions", fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@map("transactions")
+}
+
+model DropOffPoint {
+  id          String       @id @default(cuid())
+  namaLokasi  String
+  latitude    Float
+  longitude   Float
+  tipe        DropOffType
+  partnerId   String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  partner User @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@map("dropoff_points")
+}
+
+model PointsTransaction {
+  id          String   @id @default(cuid())
+  userId      String
+  amount      Int
+  source      String
+  referenceId String?
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("points_transactions")
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}

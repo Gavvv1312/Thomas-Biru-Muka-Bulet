@@ -1,0 +1,1 @@
+{"version":3,"file":"pointsController.d.ts","sourceRoot":"","sources":["../../src/controllers/pointsController.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,QAAQ,EAAE,MAAM,SAAS,CAAC;AAEnC,OAAO,EAAE,oBAAoB,EAAE,MAAM,qBAAqB,CAAC;AAG3D,eAAO,MAAM,gBAAgB;qBACJ,oBAAoB,OAAO,QAAQ;4BAM5B,oBAAoB,OAAO,QAAQ;CAKlE,CAAC"}

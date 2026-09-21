@@ -1,0 +1,49 @@
+{
+  "condition_factors": {
+    "baik": 1.0,
+    "rusak_ringan": 0.5,
+    "rusak_berat": 0.15,
+    "mati": 0
+  },
+  "age_depreciation_per_year": 0.05,
+  "max_age_depreciation": 0.6,
+  "range_margin": 0.15,
+  "recycle_points_per_100g": 1,
+  "component_base_values": {
+    "smartphone": {
+      "motherboard": 250000,
+      "battery": 80000,
+      "screen": 180000,
+      "camera": 50000,
+      "speaker": 30000
+    },
+    "laptop": {
+      "motherboard": 500000,
+      "ram": 200000,
+      "storage": 250000,
+      "screen": 350000,
+      "battery": 150000,
+      "keyboard": 100000
+    },
+    "tablet": {
+      "motherboard": 300000,
+      "battery": 100000,
+      "screen": 200000,
+      "camera": 40000,
+      "speaker": 25000
+    },
+    "desktop": {
+      "motherboard": 400000,
+      "cpu": 350000,
+      "ram": 150000,
+      "storage": 200000,
+      "gpu": 500000,
+      "psu": 100000
+    },
+    "monitor": {
+      "panel": 300000,
+      "power_board": 100000,
+      "controller_board": 80000
+    }
+  }
+}
