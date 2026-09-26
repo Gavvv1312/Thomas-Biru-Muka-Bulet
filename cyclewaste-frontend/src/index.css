@@ -1,0 +1,209 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   Theme tokens. Every Tailwind color in tailwind.config.js resolves through
+   one of these CSS variables (space-separated RGB triplets, consumed via
+   Tailwind's rgb(var(--x) / <alpha-value>) pattern). Toggling the `dark`
+   class on <html> (see src/lib/ThemeContext.jsx) swaps every color at once
+   — no per-component dark: variants needed anywhere else in the app.
+   ========================================================================== */
+:root {
+  --color-ink: 20 32 25;
+  --color-ink-soft: 58 69 62;
+  --color-paper: 244 241 232;
+  --color-paper-dim: 234 230 216;
+  --color-surface: 251 250 244;
+  --color-line: 217 211 191;
+  --color-moss: 31 61 43;
+  --color-moss-deep: 20 44 29;
+  --color-signal: 183 226 77;
+  --color-signal-deep: 127 166 42;
+  --color-copper: 201 121 63;
+  --color-copper-deep: 162 95 44;
+  --color-danger: 179 69 47;
+
+  color-scheme: light;
+}
+
+.dark {
+  --color-ink: 236 240 233;
+  --color-ink-soft: 168 179 170;
+  --color-paper: 14 20 16;
+  --color-paper-dim: 21 29 24;
+  --color-surface: 26 36 30;
+  --color-line: 45 58 50;
+  --color-moss: 84 148 108;
+  --color-moss-deep: 61 112 81;
+  --color-signal: 191 230 96;
+  --color-signal-deep: 148 196 67;
+  --color-copper: 214 141 87;
+  --color-copper-deep: 184 111 60;
+  --color-danger: 216 108 85;
+
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-paper text-ink font-body antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+h1, h2, h3, h4 {
+  @apply font-display font-semibold text-moss-deep;
+  letter-spacing: -0.01em;
+  line-height: 1.08;
+}
+
+::selection {
+  @apply bg-signal text-moss-deep;
+}
+
+:focus-visible {
+  outline: 2px solid theme("colors.moss.DEFAULT");
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 font-display font-semibold text-[15px]
+      px-6 py-[13px] rounded-full border border-transparent cursor-pointer whitespace-nowrap
+      transition-all duration-150 ease-out select-none;
+  }
+  .btn:active {
+    transform: translateY(1px);
+  }
+  .btn-primary {
+    @apply bg-moss text-white hover:bg-moss-deep hover:shadow-lg hover:-translate-y-0.5;
+  }
+  .btn-signal {
+    @apply bg-signal text-moss-deep hover:bg-signal-deep hover:text-white hover:shadow-lg hover:-translate-y-0.5;
+  }
+  .btn-ghost {
+    @apply bg-surface text-ink border-line hover:border-moss;
+  }
+  .btn-outline {
+    @apply bg-transparent text-moss-deep border-moss-deep hover:bg-moss-deep hover:text-white;
+  }
+  .btn-danger-ghost {
+    @apply bg-transparent text-danger border-danger hover:bg-danger hover:text-white;
+  }
+  .btn-sm {
+    @apply px-[18px] py-[9px] text-[13px];
+  }
+  .btn-block {
+    @apply w-full;
+  }
+  .btn[disabled] {
+    @apply opacity-50 cursor-not-allowed hover:translate-y-0 hover:shadow-none;
+  }
+
+  .card {
+    @apply bg-surface border border-line rounded-md2 p-7;
+  }
+  .stat-card {
+    @apply bg-surface border border-line rounded-md2 px-[22px] py-5;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-[5px] rounded-full border border-line text-ink-soft bg-paper;
+  }
+  .badge-dot {
+    @apply w-1.5 h-1.5 rounded-full;
+    background: currentColor;
+  }
+  .badge-buyback {
+    color: #a25f2c;
+    border-color: #e4c19f;
+    background: #f6e9dc;
+  }
+  .dark .badge-buyback {
+    color: #e0a06a;
+    border-color: #6b4a2c;
+    background: #3a2a1c;
+  }
+  .badge-recycle {
+    color: #1f3d2b;
+    border-color: #cfe6a4;
+    background: #eaf5d7;
+  }
+  .dark .badge-recycle {
+    color: #a8d97a;
+    border-color: #3f5c2e;
+    background: #1e2f1a;
+  }
+  .badge-status-diajukan { color: #8a6d1f; background: #fbf1d3; border-color: #ecdca0; }
+  .dark .badge-status-diajukan { color: #e3c877; background: #3a2f14; border-color: #6b5726; }
+  .badge-status-ditawar { color: #a25f2c; background: #f7e5d6; border-color: #e9c6a4; }
+  .dark .badge-status-ditawar { color: #e0a06a; background: #3a2a1c; border-color: #6b4a2c; }
+  .badge-status-diverifikasi { color: #2f5f8a; background: #dcebf7; border-color: #b7d5ec; }
+  .dark .badge-status-diverifikasi { color: #7fb3e0; background: #16283a; border-color: #2c4a6b; }
+  .badge-status-selesai { color: #1f3d2b; background: #e2f0d3; border-color: #c3e0a3; }
+  .dark .badge-status-selesai { color: #a8d97a; background: #1a2f1a; border-color: #3a5c3a; }
+  .badge-status-dibatalkan { color: #b3452f; background: #f6dfd8; border-color: #ecc2b4; }
+  .dark .badge-status-dibatalkan { color: #e08a72; background: #3a1c18; border-color: #6b3226; }
+
+  .field label {
+    @apply block text-[13px] font-semibold text-moss-deep mb-1.5;
+  }
+  .field-hint {
+    @apply text-xs text-ink-soft mt-1.5;
+  }
+  .input {
+    @apply w-full font-body text-[15px] px-[14px] py-3 rounded-sm2 border border-line bg-white text-ink
+      transition-shadow duration-150;
+  }
+  .dark .input {
+    @apply bg-paper-dim;
+  }
+  .input:focus {
+    @apply outline-none border-moss;
+    box-shadow: 0 0 0 3px rgb(var(--color-moss) / 0.18);
+  }
+
+  .alert {
+    @apply rounded-sm2 px-4 py-3 text-sm border mb-4;
+  }
+  .alert-error {
+    @apply bg-[#f8e4dd] border-[#ecc0b0] text-[#7a3220];
+  }
+  .dark .alert-error {
+    @apply bg-[#3a1f18] border-[#6b3226] text-[#e0a08a];
+  }
+  .alert-success {
+    @apply bg-[#e4f1d3] border-[#c3e0a3] text-[#33531c];
+  }
+  .dark .alert-success {
+    @apply bg-[#1a2f16] border-[#3a5c2e] text-[#a8d97a];
+  }
+
+  .table th {
+    @apply text-left text-xs text-ink-soft font-semibold py-2.5 px-3.5 border-b border-line;
+  }
+  .table td {
+    @apply p-3.5 border-b border-line align-middle;
+  }
+  .table tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .skeleton {
+    background-image: linear-gradient(90deg, theme("colors.paper-dim") 25%, theme("colors.line") 37%, theme("colors.paper-dim") 63%);
+    background-size: 400% 100%;
+    @apply rounded-sm2 animate-shimmer;
+  }
+}
