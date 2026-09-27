@@ -281,7 +281,7 @@ export default function Landing() {
               <h2 className="text-white text-[32px] max-w-[20ch]">
                 Setiap komponen yang diselamatkan adalah limbah B3 yang tidak sampai ke TPA.
               </h2>
-              <p className="text-white/75 mt-2.5 max-w-[46ch]">
+              <p className="text-white/75 dark:text-white/90 mt-2.5 max-w-[46ch]">
                 Mulai dari satu ponsel lama di laci — cek estimasi nilainya sekarang, gratis dan tanpa komitmen.
               </p>
             </div>

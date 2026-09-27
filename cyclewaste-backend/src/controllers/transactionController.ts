@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import { TransactionStatus, UserRole } from '@prisma/client';
 import { transactionService } from '../services/transactionService';
 import { AuthenticatedRequest } from '../middlewares/auth';
 import { successResponse } from '../utils/response';
@@ -18,14 +19,14 @@ export const transactionController = {
     const { status } = req.query;
     const transactions = await transactionService.getTransactions(
       req.user!.userId,
-      req.user!.role as any,
-      status ? { status: status as any } : undefined
+      req.user!.role as UserRole,
+      status ? { status: status as TransactionStatus } : undefined
     );
     res.json(successResponse(transactions, 'Daftar transaksi berhasil diambil'));
   },
 
   getTransactionById: async (req: AuthenticatedRequest, res: Response) => {
-    const transaction = await transactionService.getTransactionById(req.params.id, req.user!.userId, req.user!.role as any);
+    const transaction = await transactionService.getTransactionById(req.params.id, req.user!.userId, req.user!.role as UserRole);
     res.json(successResponse(transaction, 'Transaksi berhasil diambil'));
   },
 

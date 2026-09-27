@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { TransactionStatus } from '@prisma/client';
 
 export const registerSchema = z.object({
   body: z.object({
@@ -60,7 +61,15 @@ export const verificationSchema = z.object({
 
 export const completeBuybackSchema = z.object({
   body: z.object({
-    harga_final: z.number().positive('Harga final harus positif'),
+    // Opsional agar jalur recycle (body kosong) tetap lolos;
+    // kewajiban harga_final untuk buyback tetap ditegakkan di transactionService.
+    harga_final: z.number().positive('Harga final harus positif').optional(),
+  }),
+});
+
+export const transactionListQuerySchema = z.object({
+  query: z.object({
+    status: z.nativeEnum(TransactionStatus).optional(),
   }),
 });
 

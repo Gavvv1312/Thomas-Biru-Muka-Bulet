@@ -3,6 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Apply the stored theme before first paint: dark-mode users get no
+         light-theme flash while the JS bundle boots. -->
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem("cw_theme");
+          if (t !== "light" && t !== "dark") {
+            t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          }
+          document.documentElement.classList.toggle("dark", t === "dark");
+        } catch (e) {}
+      })();
+    </script>
     <title>CycleWaste — Jual, Perbaiki, atau Daur Ulang Elektronik Bekas</title>
     <meta
       name="description"

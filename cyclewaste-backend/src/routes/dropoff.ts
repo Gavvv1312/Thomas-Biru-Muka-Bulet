@@ -2,12 +2,12 @@ import { Router } from 'express';
 import { dropOffController } from '../controllers/dropOffController';
 import { authenticate } from '../middlewares/auth';
 import { validate } from '../middlewares/validate';
-import { dropOffPointCreateSchema, dropOffPointUpdateSchema, idParamSchema } from '../validators/schemas';
+import { dropOffPointCreateSchema, dropOffPointUpdateSchema, dropOffPointQuerySchema, idParamSchema } from '../validators/schemas';
 
 const router = Router();
 
 // GET is public for partners, but let's keep it authenticated
-router.get('/', authenticate, dropOffController.getDropOffPoints);
+router.get('/', authenticate, validate(dropOffPointQuerySchema), dropOffController.getDropOffPoints);
 
 // POST only for partner creating their own location
 router.post('/', authenticate, validate(dropOffPointCreateSchema), dropOffController.createDropOffPoint);

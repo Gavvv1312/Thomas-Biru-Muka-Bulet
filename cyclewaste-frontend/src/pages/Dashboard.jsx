@@ -81,16 +81,16 @@ export default function Dashboard() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.35 }}>
             <div className="bg-moss text-white rounded-lg2 px-9 py-8 flex flex-wrap justify-between items-center gap-5 mb-7">
               <div>
-                <div className="text-[13px] text-white/75">Total Green Points</div>
+                <div className="text-[13px] text-white/75 dark:text-white/90">Total Green Points</div>
                 <div className="font-display text-[40px] font-bold mt-1">{data.poinHijau.toLocaleString("id-ID")}</div>
               </div>
               <div className="flex gap-8">
                 <div>
-                  <div className="text-[13px] text-white/75">Unit diselamatkan</div>
+                  <div className="text-[13px] text-white/75 dark:text-white/90">Unit diselamatkan</div>
                   <div className="font-display text-[22px] font-bold mt-1">{data.totalCompletedTransactions}</div>
                 </div>
                 <div>
-                  <div className="text-[13px] text-white/75">E-waste terhindar dari TPA</div>
+                  <div className="text-[13px] text-white/75 dark:text-white/90">E-waste terhindar dari TPA</div>
                   <div className="font-display text-[22px] font-bold mt-1">
                     {(data.totalVerifiedEwasteWeightGrams / 1000).toFixed(1)} kg
                   </div>

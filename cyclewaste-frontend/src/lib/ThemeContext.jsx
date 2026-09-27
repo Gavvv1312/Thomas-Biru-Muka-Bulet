@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
+import { flushSync } from "react-dom";
 
 const ThemeContext = createContext(null);
 const STORAGE_KEY = "cw_theme";
@@ -25,16 +26,65 @@ export function ThemeProvider({ children }) {
   useEffect(() => {
     if (localStorage.getItem(STORAGE_KEY)) return undefined;
     const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const onChange = (e) => setTheme(e.matches ? "dark" : "light");
+    const onChange = (e) => {
+      vtSwapRef.current = false;
+      setTheme(e.matches ? "dark" : "light");
+    };
     media.addEventListener("change", onChange);
     return () => media.removeEventListener("change", onChange);
   }, []);
 
-  const toggleTheme = useCallback(() => {
-    setTheme((t) => (t === "dark" ? "light" : "dark"));
+  const animTimer = useRef(null);
+  // True only for the render immediately after a View Transitions swap.
+  // ThemeToggle reads this to let the VT crossfade own the icon transition
+  // (avoids the icon popping in after the snapshot finishes).
+  const vtSwapRef = useRef(false);
+
+  // Clear the temporary transition class on unmount so it never leaks.
+  useEffect(() => () => {
+    if (animTimer.current) clearTimeout(animTimer.current);
   }, []);
 
-  return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>;
+  const toggleTheme = useCallback(() => {
+    const next = theme === "dark" ? "light" : "dark";
+    vtSwapRef.current = false;
+    if (typeof window !== "undefined") {
+      const root = document.documentElement;
+      const reduceMotion =
+        typeof window.matchMedia === "function" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!reduceMotion) {
+        // Jalur utama: View Transitions API. Browser meng-capture snapshot
+        // sebelum/sesudah lalu crossfade di compositor (GPU) — jauh lebih
+        // mulus daripada menganimasikan ratusan elemen di main thread.
+        // Sengaja TANPA class theme-anim di sini agar tidak ada kerja ganda.
+        if (typeof document.startViewTransition === "function") {
+          vtSwapRef.current = true;
+          document.startViewTransition(() => {
+            flushSync(() => {
+              setTheme(next);
+            });
+          });
+          return;
+        }
+        // Fallback (browser tanpa VT, mis. Firefox lama): transisi warna
+        // ringan — hanya properti murah, tanpa box-shadow/fill/stroke.
+        root.classList.add("theme-anim");
+        // Paksa style recalc dulu: kalau class ditambah dan warna diganti
+        // dalam satu recalc, browser bisa langsung "lompat" tanpa transisi.
+        root.getBoundingClientRect();
+        if (animTimer.current) clearTimeout(animTimer.current);
+        animTimer.current = setTimeout(() => root.classList.remove("theme-anim"), 350);
+      }
+    }
+    setTheme(next);
+  }, [theme]);
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme, vtSwapRef }}>
+      {children}
+    </ThemeContext.Provider>
+  );
 }
 
 export function useTheme() {

@@ -28,19 +28,19 @@
 }
 
 .dark {
-  --color-ink: 236 240 233;
-  --color-ink-soft: 168 179 170;
-  --color-paper: 14 20 16;
-  --color-paper-dim: 21 29 24;
-  --color-surface: 26 36 30;
-  --color-line: 45 58 50;
+  --color-ink: 233 239 234;
+  --color-ink-soft: 174 189 177;
+  --color-paper: 12 18 14;
+  --color-paper-dim: 19 28 22;
+  --color-surface: 25 36 29;
+  --color-line: 52 68 57;
   --color-moss: 84 148 108;
-  --color-moss-deep: 61 112 81;
+  --color-moss-deep: 167 232 197;
   --color-signal: 191 230 96;
-  --color-signal-deep: 148 196 67;
-  --color-copper: 214 141 87;
-  --color-copper-deep: 184 111 60;
-  --color-danger: 216 108 85;
+  --color-signal-deep: 163 220 82;
+  --color-copper: 236 168 104;
+  --color-copper-deep: 242 181 115;
+  --color-danger: 248 140 120;
 
   color-scheme: dark;
 }
@@ -51,7 +51,10 @@ html {
 
 body {
   @apply bg-paper text-ink font-body antialiased;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  /* Same 300ms/easing as `.theme-anim` below so the body fades in lockstep
+     with every other surface during a theme swap — no single element snapping. */
+  transition: background-color 300ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 300ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 h1, h2, h3, h4 {
@@ -62,6 +65,13 @@ h1, h2, h3, h4 {
 
 ::selection {
   @apply bg-signal text-moss-deep;
+}
+
+/* On the brighter dark-mode greens, white labels lose contrast — use a deep
+   forest ink for text/selection sitting directly on green fills instead. */
+.dark ::selection {
+  background: rgb(var(--color-signal));
+  color: #06251a;
 }
 
 :focus-visible {
@@ -76,6 +86,51 @@ h1, h2, h3, h4 {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+
+  /* View-transition pseudo-elements are not matched by `*` above — kill the
+     theme crossfade explicitly too (JS also skips startViewTransition). */
+  ::view-transition-group(*),
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   Dark <-> light theme transition.
+   Primary path uses the View Transitions API (see ThemeContext.jsx): the
+   browser snapshots the page and fades the new frame in on the compositor.
+   The old frame is kept fully opaque underneath and the new frame fades in
+   over it, so there is never a translucent white/black gap mid-swap — just
+   one smooth, intentional crossfade with no flash.
+   ========================================================================== */
+::view-transition-old(root) {
+  animation: none;
+  opacity: 1;
+}
+
+::view-transition-new(root) {
+  animation: cw-theme-fade-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes cw-theme-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Fallback for browsers without the View Transitions API (e.g. older
+   Firefox/Safari). ThemeContext.jsx arms `.theme-anim` only for the duration
+   of the swap, then removes it. Only cheap colour properties are transitioned
+   so the swap stays on the compositor-friendly path and never janks.
+   `opacity` is included for surfaces whose theme change is an opacity step
+   (e.g. AuroraBlob's dark:opacity-40) so they fade instead of snapping. */
+.theme-anim,
+.theme-anim *,
+.theme-anim *::before,
+.theme-anim *::after {
+  transition-property: background-color, border-color, color, opacity;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @layer components {
@@ -101,6 +156,23 @@ h1, h2, h3, h4 {
   }
   .btn-danger-ghost {
     @apply bg-transparent text-danger border-danger hover:bg-danger hover:text-white;
+  }
+  /* Dark mode: filled green buttons carry a dark label instead of white so
+     contrast stays high against the brighter dark-mode greens. */
+  .dark .btn-primary {
+    color: #06251a;
+  }
+  .dark .btn-primary:hover {
+    background-color: rgb(var(--color-moss));
+    color: #06251a;
+  }
+  .dark .btn-signal,
+  .dark .btn-signal:hover {
+    color: #06251a;
+  }
+  .dark .btn-outline:hover {
+    background-color: rgb(var(--color-moss));
+    color: #06251a;
   }
   .btn-sm {
     @apply px-[18px] py-[9px] text-[13px];
@@ -173,6 +245,12 @@ h1, h2, h3, h4 {
   .input:focus {
     @apply outline-none border-moss;
     box-shadow: 0 0 0 3px rgb(var(--color-moss) / 0.18);
+  }
+  .dark .input::placeholder {
+    color: rgb(var(--color-ink-soft) / 0.75);
+  }
+  .dark .input[disabled] {
+    color: rgb(var(--color-ink-soft));
   }
 
   .alert {

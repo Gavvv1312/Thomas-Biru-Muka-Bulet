@@ -152,7 +152,7 @@ export default function PartnerDashboard() {
           className="bg-moss text-white rounded-lg2 px-8 py-7 mb-7"
         >
           <h2 className="text-white text-[22px]">Antrean transaksi butuh tindakanmu</h2>
-          <p className="text-white/75 mt-1.5 max-w-[60ch]">
+          <p className="text-white/75 dark:text-white/90 mt-1.5 max-w-[60ch]">
             Tawar harga, verifikasi kondisi fisik saat barang tiba, lalu selesaikan transaksi untuk menerbitkan
             Green Points atau pembayaran.
           </p>
