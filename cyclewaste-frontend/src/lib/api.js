@@ -16,7 +16,11 @@ import axios from "axios";
  * directly, and turns failures into a plain Error with a human message.
  */
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+if (!BASE_URL) {
+  throw new Error("VITE_API_BASE_URL belum diset");
+}
 
 const STORAGE_KEYS = {
   access: "cw_access_token",
