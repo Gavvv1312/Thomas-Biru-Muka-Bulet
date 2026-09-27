@@ -15,7 +15,11 @@ import { swaggerSpec } from './docs/swagger';
 
 const app = express();
 
-app.use(cors({ origin: config.corsOrigin }));
+app.use(cors({
+  origin: true,
+  credentials: true,
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
